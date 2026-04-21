@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<title>Container Canary — Global shipping container trading &amp; leasing</title>
+<meta name="viewport" content="width=1280"/>
+<meta name="description" content="Container Canary — New York-based global shipping container trading and leasing. Dry boxes, high cubes, custom mods, delivered worldwide."/>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=Caveat:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  html, body { margin:0; padding:0; background:#FAF6E8; font-family: 'Archivo', system-ui, sans-serif; }
+  * { box-sizing: border-box; }
+  a { cursor: pointer; }
+  input:focus, textarea:focus, select:focus { box-shadow: 0 0 0 3px rgba(255,214,10,0.4); }
+  #root { display: flex; justify-content: center; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" crossorigin="anonymous"></script>
+
+<script type="text/babel">
+// ──────────────────────────────────────────────────────────────────────────
+// Hand-drawn cartoon shipping container
+// ──────────────────────────────────────────────────────────────────────────
+function Container({ color = '#FFD60A', stroke = '#0B0B0B', width = 180, tilt = 0, label = 'CANARY', door = 'right' }) {
+  const w = 160, h = 90;
+  const path = `
+    M 6 6
+    Q 4 4 8 3
+    L ${w - 8} 4
+    Q ${w - 2} 4 ${w - 3} 9
+    L ${w - 2} ${h - 6}
+    Q ${w - 2} ${h - 2} ${w - 7} ${h - 2}
+    L 8 ${h - 3}
+    Q 3 ${h - 2} 4 ${h - 8}
+    L 3 9
+    Q 3 5 6 6
+    Z
+  `;
+
+  const corrugations = [];
+  const corrCount = 14;
+  for (let i = 1; i < corrCount; i++) {
+    const x = (w / corrCount) * i + (Math.sin(i) * 0.8);
+    corrugations.push(
+      <path key={i} d={`M ${x} 10 Q ${x + 0.5} ${h/2} ${x - 0.3} ${h - 6}`} stroke={stroke} strokeWidth="1" fill="none" strokeLinecap="round" opacity="0.55"/>
+    );
+  }
+
+  return (
+    <svg viewBox={`-4 -4 ${w + 8} ${h + 8}`} width={width} style={{ transform: `rotate(${tilt}deg)`, transformOrigin: 'center', overflow: 'visible' }}>
+      <ellipse cx={w / 2} cy={h + 4} rx={w / 2.2} ry="2.5" fill="rgba(0,0,0,0.08)"/>
+      <path d={path} fill={color} stroke={stroke} strokeWidth="2.6" strokeLinejoin="round" strokeLinecap="round"/>
+      <path d={`M 5 8 Q ${w/2} 6 ${w - 5} 8`} stroke={stroke} strokeWidth="1.6" fill="none" strokeLinecap="round"/>
+      {corrugations}
+      {door === 'right' && (
+        <>
+          <line x1={w - 40} y1="8" x2={w - 40} y2={h - 4} stroke={stroke} strokeWidth="1.8" strokeLinecap="round"/>
+          <line x1={w - 30} y1="18" x2={w - 29} y2={h - 12} stroke={stroke} strokeWidth="1.5" strokeLinecap="round"/>
+          <line x1={w - 20} y1="18" x2={w - 19} y2={h - 12} stroke={stroke} strokeWidth="1.5" strokeLinecap="round"/>
+          <circle cx={w - 30} cy={h/2} r="1.8" fill={stroke}/>
+          <circle cx={w - 20} cy={h/2} r="1.8" fill={stroke}/>
+        </>
+      )}
+      <text x="14" y={h/2 + 4} fill={stroke} fontSize="11" fontFamily="'Caveat', 'Comic Sans MS', cursive" fontWeight="700" letterSpacing="0.5">{label}</text>
+      <rect x="1" y="1" width="7" height="7" fill="none" stroke={stroke} strokeWidth="1.6" rx="1"/>
+      <rect x={w - 8} y="1" width="7" height="7" fill="none" stroke={stroke} strokeWidth="1.6" rx="1"/>
+      <rect x="1" y={h - 8} width="7" height="7" fill="none" stroke={stroke} strokeWidth="1.6" rx="1"/>
+      <rect x={w - 8} y={h - 8} width="7" height="7" fill="none" stroke={stroke} strokeWidth="1.6" rx="1"/>
+    </svg>
+  );
+}
+
+// ──────────────────────────────────────────────────────────────────────────
+// Hand-drawn dockside gantry crane with swinging hook
+// ──────────────────────────────────────────────────────────────────────────
+function Crane({ width = 600, height = 360, stroke = '#0B0B0B', accent = '#FFD60A', hookX = 400, hookRotation = 0 }) {
+  return (
+    <svg viewBox={`0 0 ${width} ${height}`} width="100%" height="100%" style={{ overflow: 'visible' }}>
+      <path d={`M 0 ${height - 8} Q ${width/2} ${height - 4} ${width} ${height - 10}`} stroke={stroke} strokeWidth="2.5" fill="none" strokeLinecap="round"/>
+      <path d={`M 60 ${height - 8} L 130 60 Q 132 58 135 60 L 170 ${height - 8}`} stroke={stroke} strokeWidth="3" fill="none" strokeLinejoin="round" strokeLinecap="round"/>
+      <line x1="95" y1={(height - 8 + 60) / 2 - 10} x2="150" y2={(height - 8 + 60) / 2 + 10} stroke={stroke} strokeWidth="2" strokeLinecap="round"/>
+      <path d={`M ${width - 170} ${height - 8} L ${width - 135} 60 Q ${width - 132} 58 ${width - 130} 60 L ${width - 60} ${height - 8}`} stroke={stroke} strokeWidth="3" fill="none" strokeLinejoin="round" strokeLinecap="round"/>
+      <line x1={width - 150} y1={(height - 8 + 60) / 2 + 10} x2={width - 95} y2={(height - 8 + 60) / 2 - 10} stroke={stroke} strokeWidth="2" strokeLinecap="round"/>
+      <path d={`M 100 58 Q ${width/2} 54 ${width - 100} 58 L ${width - 100} 78 Q ${width/2} 82 100 78 Z`} fill={accent} stroke={stroke} strokeWidth="2.8" strokeLinejoin="round"/>
+      {[0.15, 0.3, 0.45, 0.55, 0.7, 0.85].map((p, i) => {
+        const x = 100 + (width - 200) * p;
+        return <line key={i} x1={x} y1="60" x2={x + (i%2 ? 8 : -8)} y2="76" stroke={stroke} strokeWidth="1.2" opacity="0.7" strokeLinecap="round"/>;
+      })}
+      <g>
+        <path d={`M ${hookX - 26} 58 L ${hookX - 26} 38 Q ${hookX - 24} 32 ${hookX - 18} 32 L ${hookX + 18} 32 Q ${hookX + 24} 32 ${hookX + 26} 38 L ${hookX + 26} 58`} fill="white" stroke={stroke} strokeWidth="2.4" strokeLinejoin="round"/>
+        <rect x={hookX - 20} y="37" width="40" height="14" rx="2" fill="#e8f4ff" stroke={stroke} strokeWidth="1.6"/>
+        <line x1={hookX} y1="37" x2={hookX} y2="51" stroke={stroke} strokeWidth="1.3"/>
+      </g>
+      <g transform={`rotate(${hookRotation}, ${hookX}, 78)`}>
+        <line x1={hookX} y1="78" x2={hookX} y2="200" stroke={stroke} strokeWidth="1.8" strokeLinecap="round"/>
+        <line x1={hookX - 2} y1="78" x2={hookX - 2} y2="200" stroke={stroke} strokeWidth="1.2" strokeLinecap="round" opacity="0.6"/>
+        <rect x={hookX - 50} y="196" width="100" height="10" rx="2" fill={accent} stroke={stroke} strokeWidth="2.2"/>
+        <line x1={hookX - 45} y1="206" x2={hookX - 45} y2="218" stroke={stroke} strokeWidth="1.8" strokeLinecap="round"/>
+        <line x1={hookX + 45} y1="206" x2={hookX + 45} y2="218" stroke={stroke} strokeWidth="1.8" strokeLinecap="round"/>
+      </g>
+    </svg>
+  );
+}
+
+// ──────────────────────────────────────────────────────────────────────────
+// Canary bird
+// ──────────────────────────────────────────────────────────────────────────
+function Canary({ size = 28, stroke = '#0B0B0B', fill = '#FFD60A' }) {
+  return (
+    <svg viewBox="0 0 40 30" width={size} style={{ overflow: 'visible' }}>
+      <ellipse cx="20" cy="18" rx="11" ry="8" fill={fill} stroke={stroke} strokeWidth="1.8"/>
+      <circle cx="29" cy="13" r="5.5" fill={fill} stroke={stroke} strokeWidth="1.8"/>
+      <path d="M 34 13 L 38 14 L 34 15 Z" fill="#FF9500" stroke={stroke} strokeWidth="1.2" strokeLinejoin="round"/>
+      <circle cx="30" cy="12" r="0.9" fill={stroke}/>
+      <path d="M 14 14 Q 18 8 24 12 Q 20 18 14 14 Z" fill={fill} stroke={stroke} strokeWidth="1.6" strokeLinejoin="round"/>
+      <path d="M 10 18 L 2 15 L 4 19 L 2 22 L 10 20 Z" fill={fill} stroke={stroke} strokeWidth="1.5" strokeLinejoin="round"/>
+      <line x1="18" y1="25" x2="17" y2="28" stroke={stroke} strokeWidth="1.4" strokeLinecap="round"/>
+      <line x1="22" y1="25" x2="23" y2="28" stroke={stroke} strokeWidth="1.4" strokeLinecap="round"/>
+    </svg>
+  );
+}
+
+// ──────────────────────────────────────────────────────────────────────────
+// World map — continent silhouettes + trade lanes radiating from NYC
+// ──────────────────────────────────────────────────────────────────────────
+function WorldMapRealistic({ ink, yellow, paper = '#FAF6E8' }) {
+  return (
+    <svg viewBox="0 0 1000 500" width="100%" height="100%" style={{ display: 'block' }}>
+      <defs>
+        <pattern id="hatch" patternUnits="userSpaceOnUse" width="6" height="6" patternTransform="rotate(45)">
+          <line x1="0" y1="0" x2="0" y2="6" stroke={ink} strokeWidth="0.6" opacity="0.18"/>
+        </pattern>
+      </defs>
+      {[100, 200, 300, 400].map((y) => (
+        <line key={`h${y}`} x1="0" y1={y} x2="1000" y2={y} stroke={ink} strokeWidth="0.4" strokeDasharray="1 4" opacity="0.15"/>
+      ))}
+      {[200, 400, 600, 800].map((x) => (
+        <line key={`v${x}`} x1={x} y1="0" x2={x} y2="500" stroke={ink} strokeWidth="0.4" strokeDasharray="1 4" opacity="0.15"/>
+      ))}
+
+      <path d="M 60 90 L 85 75 L 140 70 L 190 78 L 230 90 L 260 85 L 280 98 L 275 130 L 255 150 L 240 165 L 235 195 L 215 220 L 200 240 L 175 255 L 145 260 L 130 245 L 110 230 L 90 205 L 80 180 L 75 155 L 70 130 Z" fill="url(#hatch)" stroke={ink} strokeWidth="1.5" strokeLinejoin="round"/>
+      <path d="M 195 260 L 215 265 L 225 285 L 235 300 L 240 325 L 230 345 L 218 355 L 208 340 L 200 320 L 195 295 Z" fill="url(#hatch)" stroke={ink} strokeWidth="1.3" strokeLinejoin="round"/>
+      <path d="M 295 55 L 325 50 L 345 65 L 340 90 L 315 100 L 300 85 Z" fill="url(#hatch)" stroke={ink} strokeWidth="1.2" strokeLinejoin="round"/>
+      <path d="M 245 270 L 275 265 L 295 285 L 305 315 L 310 350 L 300 385 L 280 410 L 265 425 L 250 430 L 240 415 L 235 385 L 240 350 L 245 320 L 240 295 Z" fill="url(#hatch)" stroke={ink} strokeWidth="1.5" strokeLinejoin="round"/>
+      <path d="M 460 115 L 495 105 L 530 110 L 555 120 L 560 140 L 545 155 L 525 165 L 500 170 L 475 165 L 460 150 L 455 135 Z" fill="url(#hatch)" stroke={ink} strokeWidth="1.5" strokeLinejoin="round"/>
+      <path d="M 505 80 L 535 75 L 545 100 L 530 110 L 515 105 L 505 95 Z" fill="url(#hatch)" stroke={ink} strokeWidth="1.2" strokeLinejoin="round"/>
+      <path d="M 450 125 L 460 118 L 465 140 L 458 150 L 448 142 Z" fill="url(#hatch)" stroke={ink} strokeWidth="1.2" strokeLinejoin="round"/>
+      <path d="M 475 175 L 515 170 L 555 185 L 575 210 L 580 245 L 570 285 L 555 320 L 530 345 L 510 355 L 490 350 L 475 330 L 470 300 L 465 270 L 470 240 L 470 210 Z" fill="url(#hatch)" stroke={ink} strokeWidth="1.5" strokeLinejoin="round"/>
+      <path d="M 580 185 L 620 180 L 645 195 L 650 225 L 635 245 L 610 250 L 585 240 L 575 215 Z" fill="url(#hatch)" stroke={ink} strokeWidth="1.3" strokeLinejoin="round"/>
+      <path d="M 560 100 L 620 95 L 680 100 L 740 110 L 790 120 L 830 135 L 855 155 L 870 180 L 865 205 L 845 220 L 815 225 L 785 220 L 755 215 L 720 205 L 685 200 L 655 195 L 630 185 L 605 175 L 585 160 L 570 140 L 562 120 Z" fill="url(#hatch)" stroke={ink} strokeWidth="1.5" strokeLinejoin="round"/>
+      <path d="M 700 215 L 735 210 L 745 235 L 735 265 L 720 280 L 705 265 L 695 240 Z" fill="url(#hatch)" stroke={ink} strokeWidth="1.3" strokeLinejoin="round"/>
+      <path d="M 800 230 L 825 228 L 835 250 L 820 275 L 805 285 L 795 270 L 790 250 Z" fill="url(#hatch)" stroke={ink} strokeWidth="1.2" strokeLinejoin="round"/>
+      <path d="M 875 160 L 888 155 L 895 175 L 885 185 L 875 178 Z" fill="url(#hatch)" stroke={ink} strokeWidth="1.2" strokeLinejoin="round"/>
+      <path d="M 810 290 L 845 290 L 870 295 L 860 305 L 835 305 L 815 300 Z" fill="url(#hatch)" stroke={ink} strokeWidth="1.1" strokeLinejoin="round"/>
+      <path d="M 830 340 L 880 335 L 920 345 L 940 365 L 935 385 L 905 395 L 870 395 L 840 385 L 825 365 Z" fill="url(#hatch)" stroke={ink} strokeWidth="1.5" strokeLinejoin="round"/>
+      <path d="M 960 395 L 975 390 L 982 410 L 970 420 L 962 410 Z" fill="url(#hatch)" stroke={ink} strokeWidth="1.1" strokeLinejoin="round"/>
+
+      <path d="M 195 175 Q 320 100 475 138" stroke={ink} strokeWidth="1.6" fill="none" strokeDasharray="4 5" strokeLinecap="round" opacity="0.9"/>
+      <path d="M 195 175 Q 380 160 615 220" stroke={ink} strokeWidth="1.6" fill="none" strokeDasharray="4 5" strokeLinecap="round" opacity="0.9"/>
+      <path d="M 195 175 Q 400 30 820 175" stroke={ink} strokeWidth="1.6" fill="none" strokeDasharray="4 5" strokeLinecap="round" opacity="0.9"/>
+      <path d="M 195 175 Q 420 240 810 275" stroke={ink} strokeWidth="1.4" fill="none" strokeDasharray="3 5" strokeLinecap="round" opacity="0.7"/>
+      <path d="M 200 205 Q 340 140 475 148" stroke={ink} strokeWidth="1.2" fill="none" strokeDasharray="2 5" strokeLinecap="round" opacity="0.55"/>
+      <path d="M 155 205 Q 450 340 820 200" stroke={ink} strokeWidth="1.2" fill="none" strokeDasharray="2 5" strokeLinecap="round" opacity="0.55"/>
+      <path d="M 195 175 Q 230 280 280 380" stroke={ink} strokeWidth="1.6" fill="none" strokeDasharray="4 5" strokeLinecap="round" opacity="0.9"/>
+
+      {[
+        { x: 195, y: 175, label: 'New York', hub: true, labelDx: 8, labelDy: -6 },
+        { x: 200, y: 205, label: 'Savannah', labelDx: 8, labelDy: 12 },
+        { x: 160, y: 195, label: 'Norfolk', labelDx: -52, labelDy: -4 },
+        { x: 155, y: 205, label: 'Los Angeles', labelDx: -74, labelDy: 12 },
+        { x: 475, y: 138, label: 'Rotterdam', labelDx: -18, labelDy: -8 },
+        { x: 495, y: 150, label: 'Hamburg', labelDx: 8, labelDy: 4 },
+        { x: 615, y: 220, label: 'Jebel Ali', labelDx: 8, labelDy: 4 },
+        { x: 820, y: 175, label: 'Shanghai', labelDx: 8, labelDy: -2 },
+        { x: 810, y: 195, label: 'Ningbo', labelDx: 8, labelDy: 12 },
+        { x: 810, y: 275, label: 'Singapore', labelDx: 8, labelDy: 4 },
+        { x: 280, y: 380, label: 'Santos', labelDx: 8, labelDy: 4 },
+      ].map((p, i) => (
+        <g key={i}>
+          {p.hub && <circle cx={p.x} cy={p.y} r="10" fill={yellow} stroke={ink} strokeWidth="1.5" opacity="0.5"/>}
+          <circle cx={p.x} cy={p.y} r={p.hub ? 5 : 3.5} fill={ink}/>
+          <circle cx={p.x} cy={p.y} r={p.hub ? 2 : 1.3} fill={yellow}/>
+          <text x={p.x + p.labelDx} y={p.y + p.labelDy} fontSize={p.hub ? 13 : 11} fill={ink} fontFamily="'Archivo', sans-serif" fontWeight={p.hub ? 700 : 500}>{p.label}</text>
+        </g>
+      ))}
+
+      <g transform="translate(60, 440)">
+        <circle cx="0" cy="0" r="18" fill="none" stroke={ink} strokeWidth="1.3"/>
+        <path d="M 0 -16 L 4 0 L 0 16 L -4 0 Z" fill={ink}/>
+        <path d="M -16 0 L 0 4 L 16 0 L 0 -4 Z" fill="none" stroke={ink} strokeWidth="1"/>
+        <text x="0" y="-22" fontSize="10" fill={ink} textAnchor="middle" fontFamily="'Archivo', sans-serif" fontWeight="700">N</text>
+      </g>
+    </svg>
+  );
+}
+
+// ──────────────────────────────────────────────────────────────────────────
+// Contact form
+// ──────────────────────────────────────────────────────────────────────────
+function ContactForm({ ink, yellow, cream }) {
+  const [form, setForm] = React.useState({ email: '', company: '', container: "40' HC", message: '' });
+  const [sent, setSent] = React.useState(false);
+
+  const field = (label, input) => (
+    <label style={{ display: 'block', marginBottom: 18 }}>
+      <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 6, color: ink, textTransform: 'uppercase', letterSpacing: 1 }}>{label}</div>
+      {input}
+    </label>
+  );
+
+  const inputStyle = {
+    width: '100%',
+    padding: '14px 16px',
+    fontSize: 16,
+    border: `2.5px solid ${ink}`,
+    borderRadius: 12,
+    background: cream,
+    color: ink,
+    fontFamily: 'inherit',
+    boxSizing: 'border-box',
+    outline: 'none',
+  };
+
+  if (sent) {
+    return (
+      <div style={{ background: cream, border: `2.5px solid ${ink}`, borderRadius: 20, padding: 40, boxShadow: `5px 5px 0 ${ink}`, textAlign: 'center' }}>
+        <div style={{ fontSize: 72, marginBottom: 8 }}>🐦</div>
+        <h3 style={{ fontFamily: "'Caveat', cursive", fontSize: 48, margin: 0, color: ink }}>On its way!</h3>
+        <p style={{ fontSize: 16, color: ink, opacity: 0.7 }}>We'll get back within 24 hours.</p>
+      </div>
+    );
+  }
+
+  return (
+    <form onSubmit={(e) => { e.preventDefault(); setSent(true); }} style={{ background: cream, border: `2.5px solid ${ink}`, borderRadius: 20, padding: 28, boxShadow: `5px 5px 0 ${ink}` }}>
+      {field('Email', <input type="email" required value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} style={inputStyle} placeholder="you@company.com"/>)}
+      {field('Company', <input type="text" required value={form.company} onChange={(e) => setForm({ ...form, company: e.target.value })} style={inputStyle} placeholder="Acme Logistics"/>)}
+      {field('Container type needed', (
+        <select value={form.container} onChange={(e) => setForm({ ...form, container: e.target.value })} style={{ ...inputStyle, appearance: 'none', backgroundImage: `url("data:image/svg+xml,%3Csvg width='12' height='8' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%230B0B0B' stroke-width='2'/%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 16px center', paddingRight: 40 }}>
+          <option>20' Standard Dry</option>
+          <option>40' Standard Dry</option>
+          <option>20' High Cube</option>
+          <option>40' High Cube</option>
+          <option>Custom Modification</option>
+          <option>Bulk / Fleet order</option>
+          <option>Not sure yet</option>
+        </select>
+      ))}
+      {field('Message / notes', <textarea required value={form.message} onChange={(e) => setForm({ ...form, message: e.target.value })} rows={4} style={{ ...inputStyle, resize: 'vertical', fontFamily: 'inherit' }} placeholder="Quantity, origin, destination, timeline..."/>)}
+      <button type="submit" style={{ background: ink, color: yellow, padding: '16px 32px', borderRadius: 999, fontSize: 16, fontWeight: 700, border: `2.5px solid ${ink}`, width: '100%', cursor: 'pointer', fontFamily: 'inherit', boxShadow: `4px 4px 0 ${yellow}`, marginTop: 8 }}>Send inquiry →</button>
+    </form>
+  );
+}
+
+// ──────────────────────────────────────────────────────────────────────────
+// Logo badge — yellow stamp with canary, matches the hand-drawn card style
+// ──────────────────────────────────────────────────────────────────────────
+function LogoBadge({ size = 56, tilt = -3 }) {
+  const ink = '#0B0B0B';
+  const yellow = '#FFD60A';
+  const cream = '#FAF6E8';
+  return (
+    <svg viewBox="-4 -4 68 68" width={size} height={size} style={{ display: 'block', overflow: 'visible', transform: `rotate(${tilt}deg)` }}>
+      <circle cx="30" cy="30" r="28" fill={yellow} stroke={ink} strokeWidth="3"/>
+      <circle cx="30" cy="30" r="24" fill="none" stroke={ink} strokeWidth="1" strokeDasharray="2 3" opacity="0.35"/>
+      <g transform="translate(11, 18)">
+        <ellipse cx="20" cy="18" rx="11" ry="8" fill={cream} stroke={ink} strokeWidth="1.8"/>
+        <circle cx="29" cy="13" r="5.5" fill={cream} stroke={ink} strokeWidth="1.8"/>
+        <path d="M 34 13 L 38 14 L 34 15 Z" fill="#FF9500" stroke={ink} strokeWidth="1.2" strokeLinejoin="round"/>
+        <circle cx="30" cy="12" r="0.9" fill={ink}/>
+        <path d="M 14 14 Q 18 8 24 12 Q 20 18 14 14 Z" fill={cream} stroke={ink} strokeWidth="1.6" strokeLinejoin="round"/>
+        <path d="M 10 18 L 2 15 L 4 19 L 2 22 L 10 20 Z" fill={cream} stroke={ink} strokeWidth="1.5" strokeLinejoin="round"/>
+        <line x1="18" y1="25" x2="17" y2="28" stroke={ink} strokeWidth="1.4" strokeLinecap="round"/>
+        <line x1="22" y1="25" x2="23" y2="28" stroke={ink} strokeWidth="1.4" strokeLinecap="round"/>
+      </g>
+    </svg>
+  );
+}
+
+// ──────────────────────────────────────────────────────────────────────────
+// Landing page — "Paper & Notebook" combined direction
+// ──────────────────────────────────────────────────────────────────────────
+function Landing() {
+  const ink = '#0B0B0B';
+  const yellow = '#FFD60A';
+  const muted = '#5a5149';
+  const paper = '#FAF6E8';
+  const ruled = `repeating-linear-gradient(to bottom, transparent 0, transparent 31px, rgba(11,11,11,0.08) 32px, rgba(11,11,11,0.08) 33px)`;
+
+  const [phase, setPhase] = React.useState(0);
+  React.useEffect(() => {
+    let raf;
+    const start = performance.now();
+    const duration = 6000;
+    const tick = (t) => { setPhase(((t - start) % duration) / duration); raf = requestAnimationFrame(tick); };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, []);
+
+  const swing = Math.sin(phase * Math.PI * 2) * 12;
+  const hookX = 400 + Math.sin(phase * Math.PI * 2) * 160;
+  const containerLift = phase > 0.15 && phase < 0.85 ? 1 : 0;
+  const hangY = 78 + 120 + containerLift * 20;
+
+  return (
+    <div style={{ width: 1280, background: paper, backgroundImage: ruled, fontFamily: "'Archivo', system-ui, sans-serif", color: ink, position: 'relative', overflow: 'hidden' }}>
+      <div style={{ position: 'absolute', left: 100, top: 0, bottom: 0, width: 2, background: 'rgba(200,40,40,0.3)' }}/>
+      {Array.from({ length: 14 }).map((_, i) => (
+        <div key={i} style={{ position: 'absolute', left: 52, top: 80 + i * 200, width: 22, height: 22, borderRadius: 11, background: 'rgba(11,11,11,0.08)', border: `1px solid rgba(11,11,11,0.15)` }}/>
+      ))}
+
+      <nav style={{ position: 'relative', padding: '28px 64px 28px 140px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', zIndex: 10 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <LogoBadge size={56}/>
+          <div style={{ fontFamily: "'Caveat', cursive", fontSize: 32, fontWeight: 700, lineHeight: 1, letterSpacing: -0.5 }}>Container Canary</div>
+        </div>
+        <div style={{ display: 'flex', gap: 40, fontSize: 15, fontWeight: 500 }}>
+          <a href="#services" style={{ color: ink, textDecoration: 'none' }}>Services</a>
+          <a href="#reach" style={{ color: ink, textDecoration: 'none' }}>Global Reach</a>
+          <a href="#contact" style={{ color: ink, textDecoration: 'none' }}>Contact</a>
+        </div>
+        <a href="#contact" style={{ background: ink, color: yellow, padding: '12px 24px', borderRadius: 999, fontSize: 14, fontWeight: 600, textDecoration: 'none', border: `2px solid ${ink}` }}>Get a quote →</a>
+      </nav>
+
+      <section style={{ padding: '24px 64px 40px 140px', position: 'relative' }}>
+        <div style={{ fontFamily: "'Caveat', cursive", fontSize: 24, color: muted, marginBottom: 12, transform: 'rotate(-1.5deg)', display: 'inline-block' }}>
+          Est. in New York · Trading globally
+        </div>
+        <h1 style={{ fontSize: 120, lineHeight: 0.95, fontWeight: 800, letterSpacing: -4, margin: 0, marginBottom: 24 }}>
+          Containers,<br/>
+          <span style={{ display: 'inline-block', position: 'relative' }}>
+            <span style={{ position: 'relative', zIndex: 2 }}>available</span>
+            <svg style={{ position: 'absolute', left: -8, bottom: -12, width: 500, height: 32, zIndex: 1 }} viewBox="0 0 500 32" preserveAspectRatio="none">
+              <path d="M 4 20 Q 130 8 260 18 T 496 16" stroke={yellow} strokeWidth="18" fill="none" strokeLinecap="round" opacity="0.95"/>
+            </svg>
+          </span>{' '}
+          <span style={{ fontFamily: "'Caveat', cursive", fontWeight: 700, fontStyle: 'italic' }}>worldwide.</span>
+        </h1>
+        <p style={{ fontSize: 22, maxWidth: 660, lineHeight: 1.5, color: muted, marginTop: 40 }}>
+          Global shipping container trading &amp; leasing. Dry boxes, high cubes, custom mods — sourced in New York, available anywhere you need steel on the ground.
+        </p>
+        <div style={{ display: 'flex', gap: 16, marginTop: 48 }}>
+          <a href="#contact" style={{ background: yellow, color: ink, padding: '18px 36px', borderRadius: 999, fontSize: 17, fontWeight: 700, textDecoration: 'none', border: `2.5px solid ${ink}`, boxShadow: `4px 4px 0 ${ink}` }}>Request a quote</a>
+          <a href="#services" style={{ background: paper, color: ink, padding: '18px 36px', borderRadius: 999, fontSize: 17, fontWeight: 600, textDecoration: 'none', border: `2.5px solid ${ink}` }}>See our services</a>
+        </div>
+
+        <div style={{ position: 'absolute', right: 20, top: 220, width: 620, height: 420 }}>
+          <Crane width={620} height={380} stroke={ink} accent={yellow} hookX={hookX} hookRotation={swing * 0.4}/>
+          <div style={{ position: 'absolute', left: hookX - 90 - 10, top: hangY, transform: `rotate(${swing * 0.3}deg)`, transformOrigin: '90px -45px' }}>
+            <Container color={yellow} stroke={ink} width={180} label="CANARY-01"/>
+          </div>
+          <div style={{ position: 'absolute', left: 20, top: 260 }}>
+            <Container color={yellow} stroke={ink} width={130} label="20' DRY"/>
+          </div>
+          <div style={{ position: 'absolute', left: 35, top: 335 }}>
+            <Container color={paper} stroke={ink} width={130} label="40' HC"/>
+          </div>
+          <div style={{ position: 'absolute', right: 20, top: 260 }}>
+            <Container color={yellow} stroke={ink} width={130} label="40' DRY"/>
+          </div>
+          <div style={{ position: 'absolute', right: 35, top: 335 }}>
+            <Container color={paper} stroke={ink} width={130} label="20' HC"/>
+          </div>
+          <div style={{ position: 'absolute', left: `${20 + phase * 100}%`, top: 20, transform: `translateY(${Math.sin(phase * Math.PI * 4) * 8}px)` }}>
+            <Canary size={32} stroke={ink} fill={yellow}/>
+          </div>
+          <div style={{ position: 'absolute', left: `${-20 + phase * 120}%`, top: 60, transform: `translateY(${Math.sin(phase * Math.PI * 4 + 1) * 10}px)` }}>
+            <Canary size={24} stroke={ink} fill={yellow}/>
+          </div>
+        </div>
+      </section>
+
+      <section style={{ margin: '60px 64px 0 140px', background: ink, color: paper, padding: '36px 44px', borderRadius: 24, display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 24, border: `2.5px solid ${ink}`, boxShadow: `6px 6px 0 ${yellow}`, position: 'relative', zIndex: 2 }}>
+        {[
+          { n: '90+', l: 'Ports served' },
+          { n: '12k', l: 'Containers moved' },
+          { n: '24h', l: 'Avg. quote time' },
+          { n: '100%', l: 'NYC-based team' },
+        ].map((s, i) => (
+          <div key={i} style={{ textAlign: 'center' }}>
+            <div style={{ fontSize: 56, fontWeight: 800, letterSpacing: -2, lineHeight: 1, color: yellow, fontFamily: "'Caveat', cursive" }}>{s.n}</div>
+            <div style={{ fontSize: 14, opacity: 0.8, marginTop: 8 }}>{s.l}</div>
+          </div>
+        ))}
+      </section>
+
+      <section id="services" style={{ padding: '120px 64px 60px 140px', position: 'relative' }}>
+        <div style={{ fontFamily: "'Caveat', cursive", fontSize: 24, color: muted, transform: 'rotate(-1deg)', display: 'inline-block', marginBottom: 8 }}>— what we trade —</div>
+        <h2 style={{ fontSize: 72, fontWeight: 800, letterSpacing: -2, margin: 0, marginBottom: 48 }}>Steel boxes, any flavor.</h2>
+
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
+          {[
+            { title: "20' Standard Dry", desc: 'Workhorse box. Lease or buy, new or used, ready from NY, Savannah, Norfolk.', tag: 'Lease · Sale', tilt: -1.5 },
+            { title: "40' Standard Dry", desc: 'The most-shipped size on the planet. Volume pricing on fleets of 10+.', tag: 'Lease · Sale', tilt: 1.2 },
+            { title: "40' High Cube", desc: "Extra foot of interior height — perfect for volumetric cargo and conversions.", tag: 'Lease · Sale', tilt: -0.8 },
+            { title: "20' High Cube", desc: 'Compact footprint, extra height. Ideal for site offices and conversions.', tag: 'Lease · Sale', tilt: 1.8 },
+            { title: 'Custom Modifications', desc: "Doors, windows, HVAC, insulation, paint. Shop partners near Las Vegas, Savannah & Norfolk.", tag: 'Subcontracted', tilt: -1.2, big: true },
+            { title: 'Other units available upon request', desc: 'Alternative units available on request — flat racks, reefers, tanks and more. Just ask.', tag: 'On request', tilt: 0.8 },
+          ].map((s, i) => (
+            <div key={i} style={{
+              background: s.big ? yellow : paper,
+              border: `2.5px solid ${ink}`,
+              borderRadius: 20,
+              padding: 32,
+              transform: `rotate(${s.tilt}deg)`,
+              gridColumn: s.big ? 'span 2' : 'span 1',
+              boxShadow: `5px 5px 0 ${ink}`,
+              position: 'relative',
+            }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 }}>
+                <div style={{ fontSize: 12, fontWeight: 700, background: ink, color: yellow, padding: '4px 10px', borderRadius: 999 }}>{s.tag}</div>
+                <Container color={s.big ? paper : yellow} stroke={ink} width={110} label=""/>
+              </div>
+              <h3 style={{ fontSize: 32, fontWeight: 800, margin: '16px 0 10px', letterSpacing: -0.8 }}>{s.title}</h3>
+              <p style={{ fontSize: 16, lineHeight: 1.5, color: muted, margin: 0 }}>{s.desc}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section id="reach" style={{ padding: '80px 64px 60px 140px', position: 'relative' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.4fr', gap: 48, alignItems: 'center' }}>
+          <div>
+            <div style={{ fontFamily: "'Caveat', cursive", fontSize: 24, color: muted, marginBottom: 8 }}>— global reach —</div>
+            <h2 style={{ fontSize: 64, fontWeight: 800, letterSpacing: -2, margin: 0, marginBottom: 24 }}>Where we go.</h2>
+            <p style={{ fontSize: 18, lineHeight: 1.6, color: muted, marginBottom: 24 }}>
+              From our desk in New York, we source and place containers across the major trade lanes — North America, Europe, the Middle East, and Asia.
+            </p>
+            <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 10 }}>
+              {['North America — NYC · Savannah · Norfolk · LA · Houston', 'Europe — Rotterdam · Hamburg · Felixstowe', 'Middle East — Jebel Ali · Dammam', 'Asia — Shanghai · Ningbo · Busan · Singapore'].map((l, i) => (
+                <li key={i} style={{ display: 'flex', alignItems: 'center', gap: 12, fontSize: 16 }}>
+                  <span style={{ width: 8, height: 8, borderRadius: 4, background: yellow, border: `1.5px solid ${ink}` }}/>
+                  {l}
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div style={{ position: 'relative', background: paper, border: `2.5px solid ${ink}`, borderRadius: 24, padding: 20, boxShadow: `5px 5px 0 ${ink}` }}>
+            <WorldMapRealistic ink={ink} yellow={yellow} paper={paper}/>
+          </div>
+        </div>
+      </section>
+
+      <section id="contact" style={{ padding: '80px 64px 60px 140px', position: 'relative' }}>
+        <div style={{ background: yellow, border: `2.5px solid ${ink}`, borderRadius: 32, padding: 56, boxShadow: `8px 8px 0 ${ink}`, position: 'relative', overflow: 'hidden' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 40, alignItems: 'flex-start' }}>
+            <div>
+              <div style={{ fontFamily: "'Caveat', cursive", fontSize: 26, color: ink, transform: 'rotate(-1deg)', display: 'inline-block', marginBottom: 4 }}>— say hi —</div>
+              <h2 style={{ fontSize: 68, fontWeight: 800, letterSpacing: -2, margin: 0, marginBottom: 16, color: ink, lineHeight: 0.95 }}>Tell us what you need.</h2>
+              <p style={{ fontSize: 18, color: ink, opacity: 0.75, lineHeight: 1.5, marginBottom: 24 }}>
+                Quote turnaround: 24 hours. Include container type and quantity and we'll come back with options.
+              </p>
+              <div style={{ position: 'relative', width: 220, height: 160 }}>
+                <Container color={paper} stroke={ink} width={220} label="HELLO!"/>
+              </div>
+            </div>
+
+            <ContactForm ink={ink} yellow={yellow} cream={paper}/>
+          </div>
+        </div>
+      </section>
+
+      <footer style={{ padding: '60px 64px 40px 140px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: `2px dashed ${ink}`, marginTop: 40 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <LogoBadge size={44} tilt={2}/>
+          <div>
+            <div style={{ fontFamily: "'Caveat', cursive", fontSize: 24, fontWeight: 700, lineHeight: 1 }}>Container Canary</div>
+            <div style={{ fontSize: 13, color: muted, marginTop: 4 }}>New York, NY · Global trading since 2018</div>
+          </div>
+        </div>
+        <div style={{ fontSize: 13, color: muted }}>© 2026 Container Canary LLC</div>
+      </footer>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<Landing/>);
+</script>
+</body>
+</html>
