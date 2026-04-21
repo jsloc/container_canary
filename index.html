@@ -3,8 +3,9 @@
 <head>
 <meta charset="UTF-8"/>
 <title>Container Canary — Global shipping container trading &amp; leasing</title>
-<meta name="viewport" content="width=1280"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
 <meta name="description" content="Container Canary — New York-based global shipping container trading and leasing. Dry boxes, high cubes, custom mods, delivered worldwide."/>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg"/>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=Caveat:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -267,15 +268,15 @@ function LogoBadge({ size = 56, tilt = -3 }) {
   const cream = '#FAF6E8';
   return (
     <svg viewBox="-4 -4 68 68" width={size} height={size} style={{ display: 'block', overflow: 'visible', transform: `rotate(${tilt}deg)` }}>
-      <circle cx="30" cy="30" r="28" fill={yellow} stroke={ink} strokeWidth="3"/>
+      <circle cx="30" cy="30" r="28" fill={cream} stroke={ink} strokeWidth="3"/>
       <circle cx="30" cy="30" r="24" fill="none" stroke={ink} strokeWidth="1" strokeDasharray="2 3" opacity="0.35"/>
       <g transform="translate(11, 18)">
-        <ellipse cx="20" cy="18" rx="11" ry="8" fill={cream} stroke={ink} strokeWidth="1.8"/>
-        <circle cx="29" cy="13" r="5.5" fill={cream} stroke={ink} strokeWidth="1.8"/>
+        <ellipse cx="20" cy="18" rx="11" ry="8" fill={yellow} stroke={ink} strokeWidth="1.8"/>
+        <circle cx="29" cy="13" r="5.5" fill={yellow} stroke={ink} strokeWidth="1.8"/>
         <path d="M 34 13 L 38 14 L 34 15 Z" fill="#FF9500" stroke={ink} strokeWidth="1.2" strokeLinejoin="round"/>
         <circle cx="30" cy="12" r="0.9" fill={ink}/>
-        <path d="M 14 14 Q 18 8 24 12 Q 20 18 14 14 Z" fill={cream} stroke={ink} strokeWidth="1.6" strokeLinejoin="round"/>
-        <path d="M 10 18 L 2 15 L 4 19 L 2 22 L 10 20 Z" fill={cream} stroke={ink} strokeWidth="1.5" strokeLinejoin="round"/>
+        <path d="M 14 14 Q 18 8 24 12 Q 20 18 14 14 Z" fill={yellow} stroke={ink} strokeWidth="1.6" strokeLinejoin="round"/>
+        <path d="M 10 18 L 2 15 L 4 19 L 2 22 L 10 20 Z" fill={yellow} stroke={ink} strokeWidth="1.5" strokeLinejoin="round"/>
         <line x1="18" y1="25" x2="17" y2="28" stroke={ink} strokeWidth="1.4" strokeLinecap="round"/>
         <line x1="22" y1="25" x2="23" y2="28" stroke={ink} strokeWidth="1.4" strokeLinecap="round"/>
       </g>
@@ -284,9 +285,23 @@ function LogoBadge({ size = 56, tilt = -3 }) {
 }
 
 // ──────────────────────────────────────────────────────────────────────────
+// Responsive hook
+// ──────────────────────────────────────────────────────────────────────────
+function useIsMobile(breakpoint = 768) {
+  const [m, setM] = React.useState(() => typeof window !== 'undefined' && window.innerWidth < breakpoint);
+  React.useEffect(() => {
+    const on = () => setM(window.innerWidth < breakpoint);
+    window.addEventListener('resize', on);
+    return () => window.removeEventListener('resize', on);
+  }, [breakpoint]);
+  return m;
+}
+
+// ──────────────────────────────────────────────────────────────────────────
 // Landing page — "Paper & Notebook" combined direction
 // ──────────────────────────────────────────────────────────────────────────
 function Landing() {
+  const isMobile = useIsMobile();
   const ink = '#0B0B0B';
   const yellow = '#FFD60A';
   const muted = '#5a5149';
@@ -308,93 +323,112 @@ function Landing() {
   const containerLift = phase > 0.15 && phase < 0.85 ? 1 : 0;
   const hangY = 78 + 120 + containerLift * 20;
 
+  const padL = isMobile ? 20 : 140;
+  const padR = isMobile ? 20 : 64;
+
   return (
-    <div style={{ width: 1280, background: paper, backgroundImage: ruled, fontFamily: "'Archivo', system-ui, sans-serif", color: ink, position: 'relative', overflow: 'hidden' }}>
-      <div style={{ position: 'absolute', left: 100, top: 0, bottom: 0, width: 2, background: 'rgba(200,40,40,0.3)' }}/>
-      {Array.from({ length: 14 }).map((_, i) => (
+    <div style={{ width: '100%', maxWidth: 1280, background: paper, backgroundImage: ruled, fontFamily: "'Archivo', system-ui, sans-serif", color: ink, position: 'relative', overflow: 'hidden' }}>
+      {!isMobile && <div style={{ position: 'absolute', left: 100, top: 0, bottom: 0, width: 2, background: 'rgba(200,40,40,0.3)' }}/>}
+      {!isMobile && Array.from({ length: 14 }).map((_, i) => (
         <div key={i} style={{ position: 'absolute', left: 52, top: 80 + i * 200, width: 22, height: 22, borderRadius: 11, background: 'rgba(11,11,11,0.08)', border: `1px solid rgba(11,11,11,0.15)` }}/>
       ))}
 
-      <nav style={{ position: 'relative', padding: '28px 64px 28px 140px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', zIndex: 10 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <LogoBadge size={56}/>
-          <div style={{ fontFamily: "'Caveat', cursive", fontSize: 32, fontWeight: 700, lineHeight: 1, letterSpacing: -0.5 }}>Container Canary</div>
+      <nav style={{ position: 'relative', padding: `${isMobile ? 18 : 28}px ${padR}px ${isMobile ? 18 : 28}px ${padL}px`, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, zIndex: 10 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, minWidth: 0 }}>
+          <LogoBadge size={isMobile ? 40 : 56}/>
+          <div style={{ fontFamily: "'Caveat', cursive", fontSize: isMobile ? 22 : 32, fontWeight: 700, lineHeight: 1, letterSpacing: -0.5, whiteSpace: 'nowrap' }}>Container Canary</div>
         </div>
-        <div style={{ display: 'flex', gap: 40, fontSize: 15, fontWeight: 500 }}>
-          <a href="#services" style={{ color: ink, textDecoration: 'none' }}>Services</a>
-          <a href="#reach" style={{ color: ink, textDecoration: 'none' }}>Global Reach</a>
-          <a href="#contact" style={{ color: ink, textDecoration: 'none' }}>Contact</a>
-        </div>
-        <a href="#contact" style={{ background: ink, color: yellow, padding: '12px 24px', borderRadius: 999, fontSize: 14, fontWeight: 600, textDecoration: 'none', border: `2px solid ${ink}` }}>Get a quote →</a>
+        {!isMobile && (
+          <div style={{ display: 'flex', gap: 40, fontSize: 15, fontWeight: 500 }}>
+            <a href="#services" style={{ color: ink, textDecoration: 'none' }}>Services</a>
+            <a href="#reach" style={{ color: ink, textDecoration: 'none' }}>Global Reach</a>
+            <a href="#contact" style={{ color: ink, textDecoration: 'none' }}>Contact</a>
+          </div>
+        )}
+        <a href="#contact" style={{ background: ink, color: yellow, padding: isMobile ? '8px 14px' : '12px 24px', borderRadius: 999, fontSize: isMobile ? 12 : 14, fontWeight: 600, textDecoration: 'none', border: `2px solid ${ink}`, whiteSpace: 'nowrap' }}>Get a quote →</a>
       </nav>
 
-      <section style={{ padding: '24px 64px 40px 140px', position: 'relative' }}>
-        <div style={{ fontFamily: "'Caveat', cursive", fontSize: 24, color: muted, marginBottom: 12, transform: 'rotate(-1.5deg)', display: 'inline-block' }}>
+      <section style={{ padding: `${isMobile ? 16 : 24}px ${padR}px ${isMobile ? 24 : 40}px ${padL}px`, position: 'relative' }}>
+        <div style={{ fontFamily: "'Caveat', cursive", fontSize: isMobile ? 20 : 24, color: muted, marginBottom: 12, transform: 'rotate(-1.5deg)', display: 'inline-block' }}>
           Est. in New York · Trading globally
         </div>
-        <h1 style={{ fontSize: 120, lineHeight: 0.95, fontWeight: 800, letterSpacing: -4, margin: 0, marginBottom: 24 }}>
+        <h1 style={{ fontSize: isMobile ? 52 : 120, lineHeight: 0.95, fontWeight: 800, letterSpacing: isMobile ? -2 : -4, margin: 0, marginBottom: 24 }}>
           Containers,<br/>
           <span style={{ display: 'inline-block', position: 'relative' }}>
             <span style={{ position: 'relative', zIndex: 2 }}>available</span>
-            <svg style={{ position: 'absolute', left: -8, bottom: -12, width: 500, height: 32, zIndex: 1 }} viewBox="0 0 500 32" preserveAspectRatio="none">
+            <svg style={{ position: 'absolute', left: -8, bottom: isMobile ? -6 : -12, width: isMobile ? 220 : 500, height: isMobile ? 14 : 32, zIndex: 1 }} viewBox="0 0 500 32" preserveAspectRatio="none">
               <path d="M 4 20 Q 130 8 260 18 T 496 16" stroke={yellow} strokeWidth="18" fill="none" strokeLinecap="round" opacity="0.95"/>
             </svg>
           </span>{' '}
           <span style={{ fontFamily: "'Caveat', cursive", fontWeight: 700, fontStyle: 'italic' }}>worldwide.</span>
         </h1>
-        <p style={{ fontSize: 22, maxWidth: 660, lineHeight: 1.5, color: muted, marginTop: 40 }}>
+        <p style={{ fontSize: isMobile ? 17 : 22, maxWidth: 660, lineHeight: 1.5, color: muted, marginTop: isMobile ? 24 : 40 }}>
           Global shipping container trading &amp; leasing. Dry boxes, high cubes, custom mods — sourced in New York, available anywhere you need steel on the ground.
         </p>
-        <div style={{ display: 'flex', gap: 16, marginTop: 48 }}>
-          <a href="#contact" style={{ background: yellow, color: ink, padding: '18px 36px', borderRadius: 999, fontSize: 17, fontWeight: 700, textDecoration: 'none', border: `2.5px solid ${ink}`, boxShadow: `4px 4px 0 ${ink}` }}>Request a quote</a>
-          <a href="#services" style={{ background: paper, color: ink, padding: '18px 36px', borderRadius: 999, fontSize: 17, fontWeight: 600, textDecoration: 'none', border: `2.5px solid ${ink}` }}>See our services</a>
+        <div style={{ display: 'flex', gap: 12, marginTop: isMobile ? 28 : 48, flexWrap: 'wrap' }}>
+          <a href="#contact" style={{ background: yellow, color: ink, padding: isMobile ? '14px 24px' : '18px 36px', borderRadius: 999, fontSize: isMobile ? 15 : 17, fontWeight: 700, textDecoration: 'none', border: `2.5px solid ${ink}`, boxShadow: `4px 4px 0 ${ink}` }}>Request a quote</a>
+          <a href="#services" style={{ background: paper, color: ink, padding: isMobile ? '14px 24px' : '18px 36px', borderRadius: 999, fontSize: isMobile ? 15 : 17, fontWeight: 600, textDecoration: 'none', border: `2.5px solid ${ink}` }}>See our services</a>
         </div>
 
-        <div style={{ position: 'absolute', right: 20, top: 220, width: 620, height: 420 }}>
-          <Crane width={620} height={380} stroke={ink} accent={yellow} hookX={hookX} hookRotation={swing * 0.4}/>
-          <div style={{ position: 'absolute', left: hookX - 90 - 10, top: hangY, transform: `rotate(${swing * 0.3}deg)`, transformOrigin: '90px -45px' }}>
-            <Container color={yellow} stroke={ink} width={180} label="CANARY-01"/>
+        {!isMobile && (
+          <div style={{ position: 'absolute', right: 20, top: 220, width: 620, height: 420 }}>
+            <Crane width={620} height={380} stroke={ink} accent={yellow} hookX={hookX} hookRotation={swing * 0.4}/>
+            <div style={{ position: 'absolute', left: hookX - 90 - 10, top: hangY, transform: `rotate(${swing * 0.3}deg)`, transformOrigin: '90px -45px' }}>
+              <Container color={yellow} stroke={ink} width={180} label="CANARY-01"/>
+            </div>
+            <div style={{ position: 'absolute', left: 20, top: 260 }}>
+              <Container color={yellow} stroke={ink} width={130} label="20' DRY"/>
+            </div>
+            <div style={{ position: 'absolute', left: 35, top: 335 }}>
+              <Container color={paper} stroke={ink} width={130} label="40' HC"/>
+            </div>
+            <div style={{ position: 'absolute', right: 20, top: 260 }}>
+              <Container color={yellow} stroke={ink} width={130} label="40' DRY"/>
+            </div>
+            <div style={{ position: 'absolute', right: 35, top: 335 }}>
+              <Container color={paper} stroke={ink} width={130} label="20' HC"/>
+            </div>
+            <div style={{ position: 'absolute', left: `${20 + phase * 100}%`, top: 20, transform: `translateY(${Math.sin(phase * Math.PI * 4) * 8}px)` }}>
+              <Canary size={32} stroke={ink} fill={yellow}/>
+            </div>
+            <div style={{ position: 'absolute', left: `${-20 + phase * 120}%`, top: 60, transform: `translateY(${Math.sin(phase * Math.PI * 4 + 1) * 10}px)` }}>
+              <Canary size={24} stroke={ink} fill={yellow}/>
+            </div>
           </div>
-          <div style={{ position: 'absolute', left: 20, top: 260 }}>
-            <Container color={yellow} stroke={ink} width={130} label="20' DRY"/>
+        )}
+
+        {isMobile && (
+          <div style={{ marginTop: 36, position: 'relative', height: 220, overflow: 'visible' }}>
+            <Crane width={320} height={200} stroke={ink} accent={yellow} hookX={160} hookRotation={swing * 0.4}/>
+            <div style={{ position: 'absolute', left: 160 - 55 + Math.sin(phase * Math.PI * 2) * 60, top: 110 + containerLift * 12, transform: `rotate(${swing * 0.3}deg)`, transformOrigin: '55px -30px' }}>
+              <Container color={yellow} stroke={ink} width={110} label="CANARY-01"/>
+            </div>
+            <div style={{ position: 'absolute', left: `${phase * 100}%`, top: 8 }}>
+              <Canary size={22} stroke={ink} fill={yellow}/>
+            </div>
           </div>
-          <div style={{ position: 'absolute', left: 35, top: 335 }}>
-            <Container color={paper} stroke={ink} width={130} label="40' HC"/>
-          </div>
-          <div style={{ position: 'absolute', right: 20, top: 260 }}>
-            <Container color={yellow} stroke={ink} width={130} label="40' DRY"/>
-          </div>
-          <div style={{ position: 'absolute', right: 35, top: 335 }}>
-            <Container color={paper} stroke={ink} width={130} label="20' HC"/>
-          </div>
-          <div style={{ position: 'absolute', left: `${20 + phase * 100}%`, top: 20, transform: `translateY(${Math.sin(phase * Math.PI * 4) * 8}px)` }}>
-            <Canary size={32} stroke={ink} fill={yellow}/>
-          </div>
-          <div style={{ position: 'absolute', left: `${-20 + phase * 120}%`, top: 60, transform: `translateY(${Math.sin(phase * Math.PI * 4 + 1) * 10}px)` }}>
-            <Canary size={24} stroke={ink} fill={yellow}/>
-          </div>
-        </div>
+        )}
       </section>
 
-      <section style={{ margin: '60px 64px 0 140px', background: ink, color: paper, padding: '36px 44px', borderRadius: 24, display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 24, border: `2.5px solid ${ink}`, boxShadow: `6px 6px 0 ${yellow}`, position: 'relative', zIndex: 2 }}>
+      <section style={{ margin: `${isMobile ? 24 : 60}px ${padR}px 0 ${padL}px`, background: ink, color: paper, padding: isMobile ? '24px 20px' : '36px 44px', borderRadius: 24, display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', gap: 20, border: `2.5px solid ${ink}`, boxShadow: `6px 6px 0 ${yellow}`, position: 'relative', zIndex: 2 }}>
         {[
           { n: '90+', l: 'Ports served' },
           { n: '12k', l: 'Containers moved' },
           { n: '24h', l: 'Avg. quote time' },
           { n: '100%', l: 'NYC-based team' },
         ].map((s, i) => (
-          <div key={i} style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: 56, fontWeight: 800, letterSpacing: -2, lineHeight: 1, color: yellow, fontFamily: "'Caveat', cursive" }}>{s.n}</div>
-            <div style={{ fontSize: 14, opacity: 0.8, marginTop: 8 }}>{s.l}</div>
+          <div key={i} style={{ textAlign: 'center', flex: isMobile ? '1 1 40%' : '1 1 auto' }}>
+            <div style={{ fontSize: isMobile ? 44 : 56, fontWeight: 800, letterSpacing: -2, lineHeight: 1, color: yellow, fontFamily: "'Caveat', cursive" }}>{s.n}</div>
+            <div style={{ fontSize: isMobile ? 13 : 14, opacity: 0.8, marginTop: 8 }}>{s.l}</div>
           </div>
         ))}
       </section>
 
-      <section id="services" style={{ padding: '120px 64px 60px 140px', position: 'relative' }}>
-        <div style={{ fontFamily: "'Caveat', cursive", fontSize: 24, color: muted, transform: 'rotate(-1deg)', display: 'inline-block', marginBottom: 8 }}>— what we trade —</div>
-        <h2 style={{ fontSize: 72, fontWeight: 800, letterSpacing: -2, margin: 0, marginBottom: 48 }}>Steel boxes, any flavor.</h2>
+      <section id="services" style={{ padding: `${isMobile ? 60 : 120}px ${padR}px ${isMobile ? 40 : 60}px ${padL}px`, position: 'relative' }}>
+        <div style={{ fontFamily: "'Caveat', cursive", fontSize: isMobile ? 20 : 24, color: muted, transform: 'rotate(-1deg)', display: 'inline-block', marginBottom: 8 }}>— what we trade —</div>
+        <h2 style={{ fontSize: isMobile ? 40 : 72, fontWeight: 800, letterSpacing: -2, margin: 0, marginBottom: isMobile ? 28 : 48 }}>Steel boxes, any flavor.</h2>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: isMobile ? 28 : 24 }}>
           {[
             { title: "20' Standard Dry", desc: 'Workhorse box. Lease or buy, new or used, ready from NY, Savannah, Norfolk.', tag: 'Lease · Sale', tilt: -1.5 },
             { title: "40' Standard Dry", desc: 'The most-shipped size on the planet. Volume pricing on fleets of 10+.', tag: 'Lease · Sale', tilt: 1.2 },
@@ -407,59 +441,61 @@ function Landing() {
               background: s.big ? yellow : paper,
               border: `2.5px solid ${ink}`,
               borderRadius: 20,
-              padding: 32,
-              transform: `rotate(${s.tilt}deg)`,
-              gridColumn: s.big ? 'span 2' : 'span 1',
+              padding: isMobile ? 24 : 32,
+              transform: `rotate(${isMobile ? s.tilt * 0.4 : s.tilt}deg)`,
+              gridColumn: isMobile ? 'span 1' : (s.big ? 'span 2' : 'span 1'),
               boxShadow: `5px 5px 0 ${ink}`,
               position: 'relative',
             }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16, gap: 12 }}>
                 <div style={{ fontSize: 12, fontWeight: 700, background: ink, color: yellow, padding: '4px 10px', borderRadius: 999 }}>{s.tag}</div>
-                <Container color={s.big ? paper : yellow} stroke={ink} width={110} label=""/>
+                <Container color={s.big ? paper : yellow} stroke={ink} width={isMobile ? 90 : 110} label=""/>
               </div>
-              <h3 style={{ fontSize: 32, fontWeight: 800, margin: '16px 0 10px', letterSpacing: -0.8 }}>{s.title}</h3>
-              <p style={{ fontSize: 16, lineHeight: 1.5, color: muted, margin: 0 }}>{s.desc}</p>
+              <h3 style={{ fontSize: isMobile ? 24 : 32, fontWeight: 800, margin: '16px 0 10px', letterSpacing: -0.8 }}>{s.title}</h3>
+              <p style={{ fontSize: isMobile ? 15 : 16, lineHeight: 1.5, color: muted, margin: 0 }}>{s.desc}</p>
             </div>
           ))}
         </div>
       </section>
 
-      <section id="reach" style={{ padding: '80px 64px 60px 140px', position: 'relative' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.4fr', gap: 48, alignItems: 'center' }}>
+      <section id="reach" style={{ padding: `${isMobile ? 40 : 80}px ${padR}px ${isMobile ? 40 : 60}px ${padL}px`, position: 'relative' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1.4fr', gap: isMobile ? 28 : 48, alignItems: 'center' }}>
           <div>
-            <div style={{ fontFamily: "'Caveat', cursive", fontSize: 24, color: muted, marginBottom: 8 }}>— global reach —</div>
-            <h2 style={{ fontSize: 64, fontWeight: 800, letterSpacing: -2, margin: 0, marginBottom: 24 }}>Where we go.</h2>
-            <p style={{ fontSize: 18, lineHeight: 1.6, color: muted, marginBottom: 24 }}>
+            <div style={{ fontFamily: "'Caveat', cursive", fontSize: isMobile ? 20 : 24, color: muted, marginBottom: 8 }}>— global reach —</div>
+            <h2 style={{ fontSize: isMobile ? 40 : 64, fontWeight: 800, letterSpacing: -2, margin: 0, marginBottom: 24 }}>Where we go.</h2>
+            <p style={{ fontSize: isMobile ? 16 : 18, lineHeight: 1.6, color: muted, marginBottom: 24 }}>
               From our desk in New York, we source and place containers across the major trade lanes — North America, Europe, the Middle East, and Asia.
             </p>
             <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 10 }}>
               {['North America — NYC · Savannah · Norfolk · LA · Houston', 'Europe — Rotterdam · Hamburg · Felixstowe', 'Middle East — Jebel Ali · Dammam', 'Asia — Shanghai · Ningbo · Busan · Singapore'].map((l, i) => (
-                <li key={i} style={{ display: 'flex', alignItems: 'center', gap: 12, fontSize: 16 }}>
-                  <span style={{ width: 8, height: 8, borderRadius: 4, background: yellow, border: `1.5px solid ${ink}` }}/>
+                <li key={i} style={{ display: 'flex', alignItems: 'center', gap: 12, fontSize: isMobile ? 14 : 16 }}>
+                  <span style={{ width: 8, height: 8, borderRadius: 4, background: yellow, border: `1.5px solid ${ink}`, flexShrink: 0 }}/>
                   {l}
                 </li>
               ))}
             </ul>
           </div>
 
-          <div style={{ position: 'relative', background: paper, border: `2.5px solid ${ink}`, borderRadius: 24, padding: 20, boxShadow: `5px 5px 0 ${ink}` }}>
+          <div style={{ position: 'relative', background: paper, border: `2.5px solid ${ink}`, borderRadius: 24, padding: isMobile ? 12 : 20, boxShadow: `5px 5px 0 ${ink}` }}>
             <WorldMapRealistic ink={ink} yellow={yellow} paper={paper}/>
           </div>
         </div>
       </section>
 
-      <section id="contact" style={{ padding: '80px 64px 60px 140px', position: 'relative' }}>
-        <div style={{ background: yellow, border: `2.5px solid ${ink}`, borderRadius: 32, padding: 56, boxShadow: `8px 8px 0 ${ink}`, position: 'relative', overflow: 'hidden' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 40, alignItems: 'flex-start' }}>
+      <section id="contact" style={{ padding: `${isMobile ? 40 : 80}px ${padR}px ${isMobile ? 40 : 60}px ${padL}px`, position: 'relative' }}>
+        <div style={{ background: yellow, border: `2.5px solid ${ink}`, borderRadius: isMobile ? 20 : 32, padding: isMobile ? 24 : 56, boxShadow: `8px 8px 0 ${ink}`, position: 'relative', overflow: 'hidden' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: isMobile ? 28 : 40, alignItems: 'flex-start' }}>
             <div>
-              <div style={{ fontFamily: "'Caveat', cursive", fontSize: 26, color: ink, transform: 'rotate(-1deg)', display: 'inline-block', marginBottom: 4 }}>— say hi —</div>
-              <h2 style={{ fontSize: 68, fontWeight: 800, letterSpacing: -2, margin: 0, marginBottom: 16, color: ink, lineHeight: 0.95 }}>Tell us what you need.</h2>
-              <p style={{ fontSize: 18, color: ink, opacity: 0.75, lineHeight: 1.5, marginBottom: 24 }}>
+              <div style={{ fontFamily: "'Caveat', cursive", fontSize: isMobile ? 22 : 26, color: ink, transform: 'rotate(-1deg)', display: 'inline-block', marginBottom: 4 }}>— say hi —</div>
+              <h2 style={{ fontSize: isMobile ? 40 : 68, fontWeight: 800, letterSpacing: -2, margin: 0, marginBottom: 16, color: ink, lineHeight: 0.95 }}>Tell us what you need.</h2>
+              <p style={{ fontSize: isMobile ? 16 : 18, color: ink, opacity: 0.75, lineHeight: 1.5, marginBottom: 24 }}>
                 Quote turnaround: 24 hours. Include container type and quantity and we'll come back with options.
               </p>
-              <div style={{ position: 'relative', width: 220, height: 160 }}>
-                <Container color={paper} stroke={ink} width={220} label="HELLO!"/>
-              </div>
+              {!isMobile && (
+                <div style={{ position: 'relative', width: 220, height: 160 }}>
+                  <Container color={paper} stroke={ink} width={220} label="HELLO!"/>
+                </div>
+              )}
             </div>
 
             <ContactForm ink={ink} yellow={yellow} cream={paper}/>
@@ -467,7 +503,7 @@ function Landing() {
         </div>
       </section>
 
-      <footer style={{ padding: '60px 64px 40px 140px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: `2px dashed ${ink}`, marginTop: 40 }}>
+      <footer style={{ padding: `${isMobile ? 40 : 60}px ${padR}px ${isMobile ? 32 : 40}px ${padL}px`, display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: 16, justifyContent: 'space-between', alignItems: isMobile ? 'flex-start' : 'center', borderTop: `2px dashed ${ink}`, marginTop: 40 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <LogoBadge size={44} tilt={2}/>
           <div>
