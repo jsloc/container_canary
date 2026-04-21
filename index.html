@@ -398,13 +398,24 @@ function Landing() {
         )}
 
         {isMobile && (
-          <div style={{ marginTop: 36, position: 'relative', height: 220, overflow: 'visible' }}>
-            <Crane width={320} height={200} stroke={ink} accent={yellow} hookX={160} hookRotation={swing * 0.4}/>
-            <div style={{ position: 'absolute', left: 160 - 55 + Math.sin(phase * Math.PI * 2) * 60, top: 110 + containerLift * 12, transform: `rotate(${swing * 0.3}deg)`, transformOrigin: '55px -30px' }}>
-              <Container color={yellow} stroke={ink} width={110} label="CANARY-01"/>
-            </div>
-            <div style={{ position: 'absolute', left: `${phase * 100}%`, top: 8 }}>
-              <Canary size={22} stroke={ink} fill={yellow}/>
+          <div style={{ marginTop: 36, display: 'flex', justifyContent: 'center' }}>
+            <div style={{ position: 'relative', width: 280, maxWidth: '100%', height: 240 }}>
+              <Crane width={280} height={200} stroke={ink} accent={yellow} hookX={140} hookRotation={swing * 0.5}/>
+              <div style={{
+                position: 'absolute',
+                left: '50%',
+                top: 190,
+                transform: `translateX(-50%) rotate(${swing * 0.5}deg)`,
+                transformOrigin: 'center -88px',
+              }}>
+                <Container color={yellow} stroke={ink} width={88} label="CANARY-01"/>
+              </div>
+              <div style={{ position: 'absolute', left: `${phase * 100}%`, top: 4, transform: `translateY(${Math.sin(phase * Math.PI * 4) * 6}px)` }}>
+                <Canary size={20} stroke={ink} fill={yellow}/>
+              </div>
+              <div style={{ position: 'absolute', left: `${100 - phase * 100}%`, top: 24, transform: `translateY(${Math.sin(phase * Math.PI * 4 + 1) * 6}px)` }}>
+                <Canary size={16} stroke={ink} fill={yellow}/>
+              </div>
             </div>
           </div>
         )}
